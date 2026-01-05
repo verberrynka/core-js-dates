@@ -58,7 +58,7 @@ function getTime(date) {
  */
 function getDayName(date) {
   const dateObj = new Date(date);
-  const dayNumber = dateObj.getDay();
+  const dayNumber = dateObj.getUTCDay();
   let dayName = '';
 
   switch (dayNumber) {
@@ -322,8 +322,24 @@ function getCountWeekendsInMonth(month, year) {
  * Date(2024, 0, 31) => 5
  * Date(2024, 1, 23) => 8
  */
-function getWeekNumberByDate(/* date */) {
-  throw new Error('Not implemented');
+function getWeekNumberByDate(date) {
+  const currentDate = new Date(date.getTime());
+
+  const dayNumber = (currentDate.getDay() + 6) % 7;
+  currentDate.setDate(currentDate.getDate() - dayNumber + 3);
+
+  const firstThursdayInYear = currentDate.getTime();
+
+  currentDate.setMonth(0, 1);
+
+  if (currentDate.getDay() !== 4) {
+    currentDate.setMonth(0, 1 + ((4 - currentDate.getDay() + 7) % 7));
+  }
+
+  const weekNumber =
+    1 +
+    Math.ceil((firstThursdayInYear - currentDate) / (7 * 24 * 60 * 60 * 1000));
+  return weekNumber;
 }
 
 /**
@@ -337,8 +353,22 @@ function getWeekNumberByDate(/* date */) {
  * Date(2024, 0, 13) => Date(2024, 8, 13)
  * Date(2023, 1, 1) => Date(2023, 9, 13)
  */
-function getNextFridayThe13th(/* date */) {
-  throw new Error('Not implemented');
+function getNextFridayThe13th(date) {
+  const currentDate = new Date(date.getTime());
+
+  currentDate.setDate(13);
+
+  if (currentDate < date) {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+  }
+
+  while (currentDate.getDay() !== 5) {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+  }
+
+  const resultDate = currentDate;
+
+  return resultDate;
 }
 
 /**
